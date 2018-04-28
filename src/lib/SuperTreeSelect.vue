@@ -16,7 +16,7 @@
           </template>
         </div>
         <div class="content-box" ref="contentBox">
-          <div class="input-box" v-if="search">
+          <div class="input-box" v-if="searchable">
             <div style="width: 40%;display: inline-block">
               <i-input
                 @on-keyup="keyUp"
@@ -51,7 +51,7 @@
         default: null,
         required: true
       },
-      search: {
+      searchable: {
         type: Boolean,
         default: false,
         required: false
@@ -175,10 +175,10 @@
       vm.traverseTree(
         {children: cloneData},
         (node, parentNode) => {
-          if (parentNode && parentNode.title) {
-            node.value = `${parentNode.value}/${node.title}`
+          if (parentNode && parentNode[vm.pkey]) {
+            node.value = `${parentNode.value}/${node[vm.pkey]}`
           } else {
-            node.value = node.title
+            node.value = node[vm.pkey]
           }
           if (!node.children && keys.includes(node[vm.pkey])) node.checked = true
         }
