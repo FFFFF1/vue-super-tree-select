@@ -1,7 +1,7 @@
 # vue-super-tree-select
 
 > 基于Vue和iView-UI组件库开发的一款树选择器，支持本地搜索
-![vue-super-tree-select](https://github.com/FFFFF1/vue-super-tree-select/blob/master/demo.jpg)
+![vue-super-tree-select](https://github.com/FFFFF1/vue-super-tree-select/blob/master/demo.svg)
 ## install 安装
 ``` bash
 npm install vue-super-tree-select --save
