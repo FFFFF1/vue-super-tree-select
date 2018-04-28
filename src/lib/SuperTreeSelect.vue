@@ -135,7 +135,12 @@
         } else {
           vm.traverseTree(
             {children: vm.originData},
-            (node) => { if (node.children && node.children.length > 0) node.checked = node.indeterminate = false }
+            (node) => {
+              if (node.children && node.children.length > 0) {
+                delete node.checked
+                delete node.indeterminate
+              }
+            }
           )
           vm.searching = false
         }
