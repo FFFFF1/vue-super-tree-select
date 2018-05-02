@@ -1,7 +1,15 @@
 <template>
   <div>
     <span class="tech-sel-wrapper">
-      <div ref="selectBox" class="select-box" tabindex="-1" @blur="blur" @focus="focus" :style="{width: `${width}px`}">
+      <div
+        ref="selectBox"
+        class="select-box"
+        tabindex="-1"
+        @blur="blur"
+        @focus="focus"
+        @mouseenter="hover"
+        @mouseleave="() => {this.showClear = false}"
+        :style="{width: `${width}px`}">
         <div class="tag-box">
           <template v-for="(item, index) in selectNodes">
             <Tag
@@ -9,11 +17,13 @@
               closable
               :key="index"
               @on-close="closeTag"
-              :name="JSON.stringify(item)"
-            >
+              :name="JSON.stringify(item)">
               {{item.title}}
             </Tag>
           </template>
+        </div>
+        <div v-if="clearable" class="clear-btn" v-show="showClear" @click="clear">
+          <Icon type="close-circled" size="16"></Icon>
         </div>
         <div class="content-box" ref="contentBox">
           <div class="input-box" v-if="searchable">
@@ -42,7 +52,7 @@
 </template>
 
 <script>
-  import $ from 'jquery'
+  import {addClass, removeClass, contains} from './util'
 
   export default {
     props: {
@@ -52,6 +62,11 @@
         required: true
       },
       searchable: {
+        type: Boolean,
+        default: false,
+        required: false
+      },
+      clearable: {
         type: Boolean,
         default: false,
         required: false
@@ -78,48 +93,71 @@
         searchData: [],
         originData: [],
         selectNodes: [],
-        keyWord: null
+        keyWord: null,
+        showClear: false
       }
     },
     methods: {
       focus: function () {
         const vm = this
-        $(vm.$refs.selectBox).addClass('active')
-        $(vm.$refs.contentBox).addClass('fade-in')
+        addClass(vm.$refs.selectBox, 'active')
+        addClass(vm.$refs.contentBox, 'fade-in')
       },
       blur: function ({relatedTarget}) {
         const vm = this
         switch (true) {
-          case $(relatedTarget).parents('.input-box').length > 0:
+          case contains(document.querySelector('.input-box'), relatedTarget):
             break
-          case $(relatedTarget).parents('.tree-box').length > 0:
-            $(vm.$refs.selectBox).focus()
+          case contains(document.querySelector('.tree-box'), relatedTarget):
+            vm.$refs.selectBox.focus()
             break
           default:
-            $(vm.$refs.selectBox).removeClass('active')
-            $(vm.$refs.contentBox).removeClass('fade-in').addClass('fade-out')
+            removeClass(vm.$refs.selectBox, 'active')
+            removeClass(vm.$refs.contentBox, 'fade-in')
+            addClass(vm.$refs.contentBox, 'fade-out')
         }
+      },
+      hover: function () {
+        const vm = this
+        if (vm.selectNodes.length > 0) vm.showClear = true
       },
       inputBlur: function ({relatedTarget}) {
         const vm = this
         switch (true) {
           case relatedTarget === vm.$refs.selectBox:
-            $(vm.$refs.selectBox).focus()
+            vm.$refs.selectBox.focus()
             break
-          case $(relatedTarget).parents('.tree-box').length > 0:
-            $(vm.$refs.selectBox).focus()
+          case contains(document.querySelector('.tree-box'), relatedTarget):
+            vm.$refs.selectBox.focus()
             break
           default:
-            $(vm.$refs.selectBox).removeClass('active')
-            $(vm.$refs.contentBox).removeClass('fade-in').addClass('fade-out')
+            removeClass(vm.$refs.selectBox, 'active')
+            removeClass(vm.$refs.contentBox, 'fade-in')
+            addClass(vm.$refs.contentBox, 'fade-out')
         }
+      },
+      clear: function () {
+        const vm = this
+        vm.selectNodes = []
+        vm.traverseTree(
+          {children: vm.originData},
+          (node) => {
+            if (node.children && node.children.length > 0) {
+              node.checked = node.indeterminate = false
+            } else {
+              node.checked = false
+            }
+          }
+        )
       },
       setSelectNodes: function () {
         const vm = this
         let nodes = []
         vm.traverseTree(
           {children: vm.originData},
-          (node) => { if (!node.children && node.checked === true) nodes.push(node) }
+          (node) => {
+            if (!node.children && node.checked === true) nodes.push(node)
+          }
         )
         vm.$emit('input', vm.selectNodes = nodes)
       },
@@ -129,7 +167,9 @@
           vm.searchData = []
           vm.traverseTree(
             {children: vm.originData},
-            (node) => { if (!node.children && node.title.includes(vm.keyWord)) vm.searchData.push(node) }
+            (node) => {
+              if (!node.children && node.title.includes(vm.keyWord)) vm.searchData.push(node)
+            }
           )
           vm.searching = true
         } else {
@@ -171,7 +211,9 @@
     created () {
       const vm = this
       let cloneData = JSON.parse(JSON.stringify(vm.data))
-      let keys = vm.value.map((val) => { if (val[vm.pkey]) return val[vm.pkey] })
+      let keys = vm.value.map((val) => {
+        if (val[vm.pkey]) return val[vm.pkey]
+      })
       vm.traverseTree(
         {children: cloneData},
         (node, parentNode) => {
@@ -199,7 +241,16 @@
       border-radius: 5px;
       border: 1px solid #CCC;
       transition: .3s;
-      cursor: pointer;
+      .clear-btn {
+        position: absolute;
+        right: 5px;
+        top: 40%;
+        transition: .5s;
+        cursor: pointer;
+        &:hover {
+          color: #f07649;
+        }
+      }
       .tag-box {
         width: 100%;
         height: 100%;
@@ -216,8 +267,8 @@
       .content-box {
         height: 0;
         background-color: #FFF;
-        cursor: default;
         position: absolute;
+        z-index: 100;
         left: 0;
         top: 110%;
         padding-left: 10px;

@@ -1,7 +1,7 @@
 {
   "name": "vue-super-tree-select",
   "description": "vue super tree select",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "F1",
   "license": "MIT",
   "private": false,
@@ -15,7 +15,6 @@
     "url": "git+https://github.com/FFFFF1/vue-super-tree-select.git"
   },
   "dependencies": {
-    "jquery": "^3.3.1",
     "vue": "^2.5.11"
   },
   "keywords": [

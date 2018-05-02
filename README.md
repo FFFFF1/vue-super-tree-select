@@ -10,7 +10,7 @@ npm install vue-super-tree-select --save
 > 该组件是基于iView的，请事先use iView 与其CSS
 ``` vue
 <template>
-  <super-tree-select v-model='model_' :data='data_' :search='true' width="500"></super-tree-select>
+  <super-tree-select v-model='model_' :data='data_' :searchable='true' width="500"></super-tree-select>
 </template>
 
 <script>
@@ -54,5 +54,6 @@ export default {
 | pkey | 设置每一个节点的唯一标识 | String | title
 | v-model | 存放组件中选择的最底层节点信息,每个节点信息会自动加上一个value属性，记录其所有父节点的pkey值类似于:'id1/id2/id3' | Array | /|
 | data | 组件中所有的选择项，格式请参照示例 | Array | /|
-| search | 是否可搜索，设置该属性为true时，可以根据子节点的title进行搜索 | Boolean | false |
+| searchable | 是否可搜索，设置该属性为true时，可以根据子节点的title进行搜索 | Boolean | false |
+| clearable | 是否可清空 | Boolean | false |
 | width | 设置组件的宽度 | String | 300 |
