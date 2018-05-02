@@ -8,6 +8,7 @@ npm install vue-super-tree-select --save
 ```
 ## Usage 示例
 > 该组件是基于iView的，请事先use iView 与其CSS
+> 如果出现下拉框 被其他组件遮盖时，请自行修改.content-box 的z-index值(默认为100)
 ``` vue
 <template>
   <super-tree-select v-model='model_' :data='data_' :searchable='true' width="500"></super-tree-select>
