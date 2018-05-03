@@ -26,7 +26,7 @@
           <Icon type="close-circled" size="16"></Icon>
         </div>
         <div class="content-box" ref="contentBox">
-          <div class="input-box" v-if="searchable">
+          <div class="input-box" v-if="searchable" ref="inputBox">
             <div style="width: 40%;display: inline-block">
               <i-input
                 @on-keyup="keyUp"
@@ -37,7 +37,7 @@
               </i-input>
             </div>
           </div>
-          <div class="tree-box">
+          <div class="tree-box" ref="treeBox">
             <Tree
               :data="searching ? searchData : originData"
               multiple
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-  import {addClass, removeClass, contains} from './util'
+  import {addClass, removeClass, contains} from './util/index'
 
   export default {
     props: {
@@ -106,9 +106,9 @@
       blur: function ({relatedTarget}) {
         const vm = this
         switch (true) {
-          case contains(document.querySelector('.input-box'), relatedTarget):
+          case contains(vm.$refs.inputBox, relatedTarget):
             break
-          case contains(document.querySelector('.tree-box'), relatedTarget):
+          case contains(vm.$refs.treeBox, relatedTarget):
             vm.$refs.selectBox.focus()
             break
           default:
@@ -127,7 +127,7 @@
           case relatedTarget === vm.$refs.selectBox:
             vm.$refs.selectBox.focus()
             break
-          case contains(document.querySelector('.tree-box'), relatedTarget):
+          case contains(vm.$refs.treeBox, relatedTarget):
             vm.$refs.selectBox.focus()
             break
           default:
